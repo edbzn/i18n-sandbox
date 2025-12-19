@@ -74,6 +74,14 @@
           "buildTarget": "node-app:build:production"
         }
       }
+    },
+    "extract-i18n": {
+      "executor": "@i18n-sandbox/i18n-tools:extract-translations",
+      "options": {
+        "sourceRoot": "apps/node-app/src",
+        "outputPath": "apps/node-app/src/i18n",
+        "pattern": "\\$localize`:@@([^:]+):[^`]*`"
+      }
     }
   },
   "tags": []

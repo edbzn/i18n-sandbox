@@ -1,2 +1,14 @@
-<app-nx-welcome></app-nx-welcome>
+<div class="app-container">
+  <div class="language-switcher">
+    <a [href]="'/en'" [class.active]="currentLocale === 'en'">English</a>
+    <span> | </span>
+    <a [href]="'/fr'" [class.active]="currentLocale === 'fr'">Français</a>
+  </div>
+
+  <h1 i18n="@@welcomeTitle">Welcome to Angular</h1>
+  <p i18n="@@welcomeDescription">This is an example of internationalization using @angular/localize</p>
+  <button i18n="@@getStartedButton">Get Started</button>
+  <p i18n="@@currentLanguage">Current Language: English</p>
+</div>
+
 <router-outlet></router-outlet>

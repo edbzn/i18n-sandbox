@@ -1,0 +1,9 @@
+{
+  "locale": "en",
+  "translations": {
+    "actions.getStarted": "Get Started",
+    "currentLanguage": "Current Language: English",
+    "welcome.description": "This is an example of internationalization using @angular/localize in React",
+    "welcome.title": "Welcome to React"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "ExtractTranslations executor",
+  "description": "Extract translation keys from React source files",
+  "type": "object",
+  "properties": {
+    "sourceRoot": {
+      "type": "string",
+      "description": "The source root directory to scan for translation keys"
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "Path where the extracted translations JSON file will be saved",
+      "default": "i18n/translations.json"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "Regex pattern to match translation function calls",
+      "default": "t\\(['\"`]([^'\"`]+)['\"`]\\)"
+    },
+    "include": {
+      "type": "array",
+      "description": "Glob patterns for files to include",
+      "items": {
+        "type": "string"
+      },
+      "default": ["**/*.tsx", "**/*.ts", "**/*.jsx", "**/*.js"]
+    },
+    "exclude": {
+      "type": "array",
+      "description": "Glob patterns for files to exclude",
+      "items": {
+        "type": "string"
+      },
+      "default": ["**/node_modules/**", "**/*.spec.*", "**/*.test.*"]
+    }
+  },
+  "required": ["sourceRoot", "outputPath"]
+}

@@ -5,6 +5,14 @@
   "prefix": "app",
   "sourceRoot": "apps/ng-app/src",
   "tags": [],
+  "i18n": {
+    "sourceLocale": "en",
+    "locales": {
+      "fr": {
+        "translation": "apps/ng-app/src/i18n/messages.fr.xlf"
+      }
+    }
+  },
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -19,10 +27,13 @@
             "input": "apps/ng-app/public"
           }
         ],
-        "styles": ["apps/ng-app/src/styles.css"]
+        "styles": ["apps/ng-app/src/styles.css"],
+        "localize": ["en", "fr"],
+        "polyfills": ["@angular/localize/init"]
       },
       "configurations": {
         "production": {
+          "localize": true,
           "budgets": [
             {
               "type": "initial",
@@ -41,6 +52,12 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "fr": {
+          "localize": ["fr"],
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
         }
       },
       "defaultConfiguration": "production"
@@ -54,12 +71,22 @@
         },
         "development": {
           "buildTarget": "ng-app:build:development"
+        },
+        "fr": {
+          "buildTarget": "ng-app:build:fr"
         }
       },
       "defaultConfiguration": "development"
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "ng-app:build",
+        "outputPath": "apps/ng-app/src/i18n"
+      }
     },
     "serve-static": {
       "continuous": true,

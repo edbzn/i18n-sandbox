@@ -1,0 +1,8 @@
+{
+  "locale": "en",
+  "translations": {
+    "api.currentLanguage": "Current Language: English",
+    "api.description": "This is a Node.js API with internationalization",
+    "api.welcome": "Hello API"
+  }
+}

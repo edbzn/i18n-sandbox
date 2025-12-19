@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "extract-translations": {
+      "implementation": "./src/executors/extract-translations/executor",
+      "schema": "./src/executors/extract-translations/schema.json",
+      "description": "extract-translations executor"
+    }
+  }
+}

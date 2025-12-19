@@ -1,0 +1,9 @@
+{
+  "locale": "fr",
+  "translations": {
+    "actions.getStarted": "Commencer",
+    "currentLanguage": "Langue actuelle : Français",
+    "welcome.description": "Ceci est un exemple d'internationalisation utilisant @angular/localize dans React",
+    "welcome.title": "Bienvenue sur React"
+  }
+}

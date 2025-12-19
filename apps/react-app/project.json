@@ -4,6 +4,14 @@
   "sourceRoot": "apps/react-app/src",
   "projectType": "application",
   "tags": [],
-  "// targets": "to see all targets run: nx show project react-app --web",
-  "targets": {}
+  "targets": {
+    "extract-i18n": {
+      "executor": "@i18n-sandbox/i18n-tools:extract-translations",
+      "options": {
+        "sourceRoot": "apps/react-app/src",
+        "outputPath": "apps/react-app/src/i18n",
+        "pattern": "\\$localize`:@@([^:]+):[^`]*`"
+      }
+    }
+  }
 }

@@ -1,0 +1,9 @@
+{
+  "locale": "en",
+  "translations": {
+    "welcomeTitle": "Welcome to Angular",
+    "welcomeDescription": "This is an example of internationalization using @angular/localize",
+    "getStartedButton": "Get Started",
+    "currentLanguage": "Current Language: English"
+  }
+}

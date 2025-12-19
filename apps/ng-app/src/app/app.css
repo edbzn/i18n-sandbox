@@ -1,0 +1,61 @@
+.app-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.language-switcher {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.language-switcher a {
+  color: #1976d2;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.language-switcher a:hover {
+  background-color: #e3f2fd;
+}
+
+.language-switcher a.active {
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+}
+
+.language-switcher span {
+  color: #666;
+}
+
+.app-container h1 {
+  color: #1976d2;
+  margin-bottom: 1rem;
+}
+
+.app-container p {
+  margin: 1rem 0;
+  line-height: 1.6;
+}
+
+.app-container button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.app-container button:hover {
+  background-color: #1565c0;
+}
