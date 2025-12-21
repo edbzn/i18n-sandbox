@@ -3,6 +3,7 @@
  * Integrates Angular's localize Babel plugins with Vite
  */
 import type { Plugin } from 'vite';
+// @ts-ignore - @babel/core doesn't have proper types in some environments
 import { transformAsync } from '@babel/core';
 import {
   makeEs2015TranslatePlugin,
@@ -11,7 +12,8 @@ import {
   Diagnostics,
   SimpleJsonTranslationParser,
 } from '@angular/localize/tools';
-import type { ɵParsedTranslation } from '@angular/localize/private';
+// Using a type import workaround for private API
+type ɵParsedTranslation = any;
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -19,7 +21,7 @@ export interface LocalizePluginOptions {
   /**
    * Path to translation file(s) or translations object
    */
-  translations?:  string | Record<string, ɵParsedTranslation>;
+  translations?: string | Record<string, ɵParsedTranslation>;
 
   /**
    * Target locale for the build
@@ -72,7 +74,9 @@ function loadTranslations(filePath: string): TranslationFile {
   // First analyze the file
   const analysis = parser.analyze(filePath, content);
   if (!analysis.canParse) {
-    throw new Error(analysis.diagnostics.formatDiagnostics(`Cannot parse ${filePath}`));
+    throw new Error(
+      analysis.diagnostics.formatDiagnostics(`Cannot parse ${filePath}`),
+    );
   }
 
   // Parse with the hint from analysis
@@ -80,11 +84,13 @@ function loadTranslations(filePath: string): TranslationFile {
   const parsedFile = parser.parse(filePath, content, analysis.hint);
 
   if (parsedFile.diagnostics.hasErrors) {
-    throw new Error(parsedFile.diagnostics.formatDiagnostics(`Failed to parse ${filePath}`));
+    throw new Error(
+      parsedFile.diagnostics.formatDiagnostics(`Failed to parse ${filePath}`),
+    );
   }
 
   return {
-    locale: parsedFile.locale,
+    locale: parsedFile.locale || 'en',
     translations: parsedFile.translations,
   };
 }
@@ -102,12 +108,15 @@ function makeICURuntimePlugin(locale: string, localizeName: string) {
             const quasi = path.node.quasi;
 
             console.log('[Babel Plugin] Found $localize template');
-            console.log('[Babel Plugin] Template parts:', quasi.quasis.map((q: any) => q.value.raw));
+            console.log(
+              '[Babel Plugin] Template parts:',
+              quasi.quasis.map((q: any) => q.value.raw),
+            );
 
             // Check if any template parts contain ICU syntax
             // Look for patterns like ":VAR_PLURAL:, plural" or "{VAR_PLURAL, plural"
             const hasICU = quasi.quasis.some((q: any) =>
-              /[:,]\s*(plural|select|selectordinal)/i.test(q.value.raw)
+              /[:,]\s*(plural|select|selectordinal)/i.test(q.value.raw),
             );
 
             console.log('[Babel Plugin] Has ICU:', hasICU);
@@ -139,7 +148,9 @@ function makeICURuntimePlugin(locale: string, localizeName: string) {
                   const nextQuasi = quasi.quasis[i + 1];
                   const nextRaw = nextQuasi ? nextQuasi.value.raw : '';
                   const placeholderMatch = nextRaw.match(/^:([^:,}]+):/);
-                  const placeholderName = placeholderMatch ? placeholderMatch[1].trim() : `expr_${i}`;
+                  const placeholderName = placeholderMatch
+                    ? placeholderMatch[1].trim()
+                    : `expr_${i}`;
                   expressionMap.push({ name: placeholderName, expr });
 
                   // Add the current part + placeholder to message string
@@ -153,8 +164,8 @@ function makeICURuntimePlugin(locale: string, localizeName: string) {
               // Create runtime ICU call: $localize._icu(messageId, message, locale, values)
               const valuesObj = t.objectExpression(
                 expressionMap.map((item: any) =>
-                  t.objectProperty(t.stringLiteral(item.name), item.expr)
-                )
+                  t.objectProperty(t.stringLiteral(item.name), item.expr),
+                ),
               );
 
               // Extract locale dynamically from URL: window.location.pathname.match(/^\/(en|fr)/)?.[1] || 'en'
@@ -166,31 +177,31 @@ function makeICURuntimePlugin(locale: string, localizeName: string) {
                       t.memberExpression(
                         t.memberExpression(
                           t.identifier('window'),
-                          t.identifier('location')
+                          t.identifier('location'),
                         ),
-                        t.identifier('pathname')
+                        t.identifier('pathname'),
                       ),
-                      t.identifier('match')
+                      t.identifier('match'),
                     ),
-                    [t.regExpLiteral('^\\/([a-z]{2})')]
+                    [t.regExpLiteral('^\\/([a-z]{2})')],
                   ),
                   t.numericLiteral(1),
-                  true  // optional chaining
+                  true, // optional chaining
                 ),
-                t.stringLiteral('en')
+                t.stringLiteral('en'),
               );
 
               const runtimeCall = t.callExpression(
                 t.memberExpression(
                   t.identifier(localizeName),
-                  t.identifier('_icu')
+                  t.identifier('_icu'),
                 ),
                 [
                   t.stringLiteral(messageId),
                   t.stringLiteral(messageStr),
                   localeExpr,
                   valuesObj,
-                ]
+                ],
               );
 
               path.replaceWith(runtimeCall);
@@ -228,7 +239,7 @@ export function angularLocalize(options: LocalizePluginOptions = {}): Plugin {
       // Load translations during config resolution
       if (typeof translations === 'string') {
         const translationFile = loadTranslations(
-          path.resolve(config.root, translations)
+          path.resolve(config.root, translations),
         );
         translationsMap = translationFile.translations;
         resolvedLocale = translationFile.locale;
@@ -268,29 +279,21 @@ export function angularLocalize(options: LocalizePluginOptions = {}): Plugin {
             // Inline the locale
             makeLocalePlugin(resolvedLocale, { localizeName }),
             // Translate ES2015+ tagged templates
-            makeEs2015TranslatePlugin(
-              diagnostics,
-              translationsMap,
-              {
-                missingTranslation,
-                localizeName,
-              }
-            ),
+            makeEs2015TranslatePlugin(diagnostics, translationsMap, {
+              missingTranslation,
+              localizeName,
+            }),
             // Translate ES5 function calls (for compatibility)
-            makeEs5TranslatePlugin(
-              diagnostics,
-              translationsMap,
-              {
-                missingTranslation,
-                localizeName,
-              }
-            )
+            makeEs5TranslatePlugin(diagnostics, translationsMap, {
+              missingTranslation,
+              localizeName,
+            }),
           );
         }
 
         const result = await transformAsync(code, {
           filename: id,
-          sourceMaps:  sourceMaps,
+          sourceMaps: sourceMaps,
           compact: false,
           plugins,
         });
@@ -299,7 +302,7 @@ export function angularLocalize(options: LocalizePluginOptions = {}): Plugin {
         if (!enableRuntimeICU) {
           if (diagnostics.hasErrors) {
             const errorMessage = diagnostics.formatDiagnostics(
-              `Translation errors in ${id}`
+              `Translation errors in ${id}`,
             );
             this.error(errorMessage);
           } else if (diagnostics.messages.length > 0) {
@@ -311,7 +314,7 @@ export function angularLocalize(options: LocalizePluginOptions = {}): Plugin {
           }
         }
 
-        if (! result || ! result.code) {
+        if (!result || !result.code) {
           return null;
         }
 

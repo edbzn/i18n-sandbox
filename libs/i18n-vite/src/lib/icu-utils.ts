@@ -14,7 +14,8 @@ export interface ICUMessage {
 // Input: "{count, plural, =0 {no items} other {# items}}"
 // Output: {type: 'plural', variable: 'count', cases: {'=0': 'no items', 'other': '# items'}}
 export function parseICUMessage(message: string): ICUMessage | null {
-  const icuPattern = /\{([^,}]+),\s*(plural|select|selectordinal)\s*,\s*(?:offset:\s*(\d+)\s*)?((?:[^{}]|\{[^{}]*\})*)\}/;
+  const icuPattern =
+    /\{([^,}]+),\s*(plural|select|selectordinal)\s*,\s*(?:offset:\s*(\d+)\s*)?((?:[^{}]|\{[^{}]*\})*)\}/;
   const match = message.match(icuPattern);
 
   if (!match) {
@@ -22,7 +23,7 @@ export function parseICUMessage(message: string): ICUMessage | null {
   }
 
   const [, variable, type, offset, casesStr] = match;
-  const cases:  Record<string, string> = {};
+  const cases: Record<string, string> = {};
 
   // Parse cases like "=0 {no items} =1 {one item} other {# items}"
   const casePattern = /(=\d+|\w+)\s*\{([^}]*)\}/g;
@@ -34,8 +35,8 @@ export function parseICUMessage(message: string): ICUMessage | null {
   }
 
   return {
-    type:  type as any,
-    variable:  variable.trim(),
+    type: type as any,
+    variable: variable.trim(),
     cases,
     offset: offset ? parseInt(offset, 10) : undefined,
   };
@@ -47,7 +48,7 @@ export function parseICUMessage(message: string): ICUMessage | null {
 export function renderICUMessage(
   icu: ICUMessage,
   values: Record<string, any>,
-  locale: string
+  locale: string,
 ): string {
   const value = values[icu.variable];
 
@@ -59,7 +60,7 @@ export function renderICUMessage(
       result = result.replace(/#/g, String(numValue));
     }
     // Replace all {PLACEHOLDER} style interpolations
-    Object.keys(values).forEach(key => {
+    Object.keys(values).forEach((key) => {
       const regex = new RegExp(`\\b${key}\\b`, 'g');
       result = result.replace(regex, String(values[key]));
     });
@@ -82,7 +83,11 @@ export function renderICUMessage(
     }
 
     // Get plural category for the locale
-    const category = getPluralCategory(numValue, locale, icu.type === 'selectordinal');
+    const category = getPluralCategory(
+      numValue,
+      locale,
+      icu.type === 'selectordinal',
+    );
     const categoryMatch = icu.cases[category] || icu.cases['other'] || '';
 
     return replaceInterpolations(categoryMatch, adjustedValue);
@@ -98,11 +103,13 @@ export function renderICUMessage(
 export function getPluralCategory(
   n: number,
   locale: string,
-  ordinal: boolean = false
+  ordinal: boolean = false,
 ): string {
   // Use native Intl.PluralRules if available
   if (typeof Intl !== 'undefined' && Intl.PluralRules) {
-    const pr = new Intl.PluralRules(locale, { type: ordinal ? 'ordinal' : 'cardinal' });
+    const pr = new Intl.PluralRules(locale, {
+      type: ordinal ? 'ordinal' : 'cardinal',
+    });
     return pr.select(n);
   }
 

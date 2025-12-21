@@ -6,18 +6,25 @@ import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import { getCurrentLocale, initTranslations, getTranslations } from './i18n-init';
-import { parseICUMessage, renderICUMessage } from './icu-utils';
+import {
+  getCurrentLocale,
+  initTranslations,
+  getTranslations,
+} from './i18n-init';
+import {
+  parseICUMessage,
+  renderICUMessage,
+} from '@i18n-sandbox/i18n-vite/runtime';
 import App from './app/app';
 
 // 🌐 i18n tip: Custom ICU runtime function, called by Babel-transformed code
 // Transforms: $localize`:@@id:{count, plural, ...}` -> $localize._icu('id', template, locale, values)
 if (typeof $localize !== 'undefined') {
-  ($localize as any)._icu = function(
-    messageId: string,      // Translation key
-    message: string,        // ICU template string
-    locale: string,         // Current locale (en/fr)
-    values: Record<string, any>  // Runtime values
+  ($localize as any)._icu = function (
+    messageId: string, // Translation key
+    message: string, // ICU template string
+    locale: string, // Current locale (en/fr)
+    values: Record<string, any>, // Runtime values
   ): string {
     // 🌐 i18n tip: Get translated template for current locale
     const translations = getTranslations(locale);

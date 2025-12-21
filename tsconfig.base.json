@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@i18n-sandbox/i18n-tools": ["libs/i18n-tools/src/index.ts"]
+      "@i18n-sandbox/i18n-tools": ["libs/i18n-tools/src/index.ts"],
+      "@i18n-sandbox/vite-i18n/runtime": ["libs/vite-i18n/src/runtime.ts"],
+      "@i18n-sandbox/i18n-vite": ["libs/i18n-vite/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
-import angularLocalizePlugin from './vite.localize';
+import { angularLocalize } from '../../libs/i18n-vite/src';
 
 // 🌐 i18n tip: Set locale via LOCALE env var for production builds
 // Dev: nx serve (single build, all locales via routing)
@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
 
       // 🌐 i18n tip: enableRuntimeICU=true evaluates ICU plurals/selects at runtime
       // Simple translations are compile-time replaced, ICU expressions use $localize._icu()
-      angularLocalizePlugin({
+      angularLocalize({
         translations: `./src/i18n/${locale}.json`,
         locale: locale,
         missingTranslation: 'warning',
@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     build: {
-      // 🌐 i18n tip: Each locale builds to its own directory
+      //  i18n tip: Each locale builds to its own directory
       outDir: '../../dist/apps/react-app/' + locale,
     },
   };
