@@ -32,3 +32,31 @@ export const getAvailableLocales = i18n.getAvailableLocales;
 export const getCurrentLocale = () => {
   return i18n.getCurrentLocale() as 'en' | 'fr';
 };
+
+// 🌐 i18n tip: Custom ICU runtime function, called by Babel-transformed code
+// Transforms: $localize`:@@id:{count, plural, ...}` -> $localize._icu('id', template, locale, values)
+if (typeof $localize !== 'undefined') {
+  ($localize as any)._icu = function (
+    messageId: string, // Translation key
+    message: string, // ICU template string
+    locale: string, // Current locale (en/fr)
+    values: Record<string, any>, // Runtime values
+  ): string {
+    // 🌐 i18n tip: Get translated template for current locale
+    const translations = getTranslations(locale);
+    let messageToUse = message;
+
+    if (translations && messageId && translations[messageId]) {
+      messageToUse = translations[messageId];
+    }
+
+    // 🌐 i18n tip: Parse ICU syntax and evaluate with runtime values
+    const icu = parseICUMessage(messageToUse);
+    if (!icu) {
+      return messageToUse;
+    }
+
+    const result = renderICUMessage(icu, values, locale);
+    return result;
+  };
+}

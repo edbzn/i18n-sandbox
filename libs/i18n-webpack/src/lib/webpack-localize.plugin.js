@@ -1,5 +1,9 @@
-const {readFileSync} = require('node:fs');
-const {transformAsync} = require('@babel/core');
+/**
+ * Webpack plugin for @angular/localize compile-time translation
+ * Integrates Angular's localize Babel plugins with Webpack
+ */
+const { readFileSync } = require('node:fs');
+const { transformAsync } = require('@babel/core');
 const {
   Diagnostics,
   SimpleJsonTranslationParser,
@@ -7,18 +11,20 @@ const {
   makeLocalePlugin,
 } = require('@angular/localize/tools');
 
-// 🌐 i18n tip: Custom Babel plugin for runtime ICU evaluation
-// Transforms $localize ICU templates to $localize._icu() calls
+/**
+ * Custom Babel plugin for runtime ICU evaluation
+ * Transforms $localize ICU templates to $localize._icu() calls
+ */
 function makeICURuntimePlugin(locale, localizeName = '$localize') {
   return {
     visitor: {
       TaggedTemplateExpression(path) {
         const t = require('@babel/types');
         const tag = path.get('tag');
-        if (tag.isIdentifier({name: localizeName})) {
+        if (tag.isIdentifier({ name: localizeName })) {
           const quasi = path.node.quasi;
 
-          // 🌐 i18n tip: Check if template contains ICU syntax (plural/select/selectordinal)
+          // Check if template contains ICU syntax (plural/select/selectordinal)
           const hasICU = quasi.quasis.some((q) =>
             /[:,]\s*(plural|select|selectordinal)/i.test(q.value.raw)
           );
@@ -52,7 +58,7 @@ function makeICURuntimePlugin(locale, localizeName = '$localize') {
                 const placeholderName = placeholderMatch
                   ? placeholderMatch[1].trim()
                   : `expr_${i}`;
-                expressionMap.push({name: placeholderName, expr});
+                expressionMap.push({ name: placeholderName, expr });
 
                 messageStr += raw + placeholderName;
               } else {
@@ -95,6 +101,7 @@ class AngularLocalizePlugin {
       missingTranslation: options.missingTranslation || 'error',
       localizeName: options.localizeName || '$localize',
       include: options.include,
+      enableRuntimeICU: options.enableRuntimeICU || false,
     };
 
     // Parse translations
@@ -102,28 +109,48 @@ class AngularLocalizePlugin {
     const parser = new SimpleJsonTranslationParser();
     const analysis = parser.analyze(this.options.translationFile, contents);
     if (!analysis.canParse) {
-      throw new Error(analysis.diagnostics.formatDiagnostics(`Cannot parse ${this.options.translationFile}`));
+      throw new Error(
+        analysis.diagnostics.formatDiagnostics(
+          `Cannot parse ${this.options.translationFile}`
+        )
+      );
     }
-    const {locale, translations, diagnostics: parseDiagnostics} =
-      parser.parse(this.options.translationFile, contents, analysis.hint);
+    const { locale, translations, diagnostics: parseDiagnostics } = parser.parse(
+      this.options.translationFile,
+      contents,
+      analysis.hint
+    );
 
     if (parseDiagnostics.hasErrors) {
-      throw new Error(parseDiagnostics.formatDiagnostics(`Errors parsing ${this.options.translationFile}`));
+      throw new Error(
+        parseDiagnostics.formatDiagnostics(
+          `Errors parsing ${this.options.translationFile}`
+        )
+      );
     }
 
-    this.locale = locale;
+    this.locale = locale || 'en';
     this.translations = translations;
 
-    // 🌐 i18n tip: Prepare Babel plugins for transformation
+    // Prepare Babel plugins for transformation
     this.diagnostics = new Diagnostics();
-    this.translatePlugin = makeEs2015TranslatePlugin(this.diagnostics, this.translations, {
-      missingTranslation: this.options.missingTranslation,
+    this.translatePlugin = makeEs2015TranslatePlugin(
+      this.diagnostics,
+      this.translations,
+      {
+        missingTranslation: this.options.missingTranslation,
+        localizeName: this.options.localizeName,
+      }
+    );
+    this.localePlugin = makeLocalePlugin(this.locale, {
       localizeName: this.options.localizeName,
     });
-    this.localePlugin = makeLocalePlugin(this.locale, {localizeName: this.options.localizeName});
 
-    // 🌐 i18n tip: Add runtime ICU plugin for plural/select expressions
-    this.icuRuntimePlugin = makeICURuntimePlugin(this.locale, this.options.localizeName);
+    // Add runtime ICU plugin for plural/select expressions
+    this.icuRuntimePlugin = makeICURuntimePlugin(
+      this.locale,
+      this.options.localizeName
+    );
   }
 
   apply(compiler) {
@@ -131,29 +158,33 @@ class AngularLocalizePlugin {
       const NormalModule = require('webpack/lib/NormalModule');
 
       // Use the modern hook API
-      NormalModule.getCompilationHooks(compilation).loader.tap('AngularLocalizePlugin', (loaderContext, module) => {
-        const moduleId = module.resource;
+      NormalModule.getCompilationHooks(compilation).loader.tap(
+        'AngularLocalizePlugin',
+        (loaderContext, module) => {
+          const moduleId = module.resource;
 
-        // Skip non-JS files
-        if (!moduleId || !/\.(m?js|jsx|ts|tsx)$/.test(moduleId)) return;
+          // Skip non-JS files
+          if (!moduleId || !/\.(m?js|jsx|ts|tsx)$/.test(moduleId)) return;
 
-        // Skip node_modules
-        if (moduleId.includes('node_modules')) return;
+          // Skip node_modules
+          if (moduleId.includes('node_modules')) return;
 
-        // Apply custom include filter
-        if (this.options.include && !this.options.include(moduleId)) return;
+          // Apply custom include filter
+          if (this.options.include && !this.options.include(moduleId)) return;
 
-        // Add a custom loader for this module
-        module.loaders.push({
-          loader: require.resolve('./webpack.localize.loader.js'),
-          options: {
-            translatePlugin: this.translatePlugin,
-            localePlugin: this.localePlugin,
-            icuRuntimePlugin: this.icuRuntimePlugin,
-            diagnostics: this.diagnostics,
-          },
-        });
-      });
+          // Add a custom loader for this module
+          module.loaders.push({
+            loader: require.resolve('./webpack-localize.loader.js'),
+            options: {
+              translatePlugin: this.translatePlugin,
+              localePlugin: this.localePlugin,
+              icuRuntimePlugin: this.icuRuntimePlugin,
+              diagnostics: this.diagnostics,
+              enableRuntimeICU: this.options.enableRuntimeICU,
+            },
+          });
+        }
+      );
 
       // Report diagnostics at the end of compilation using modern hook
       compilation.hooks.processAssets.tap(
@@ -163,9 +194,19 @@ class AngularLocalizePlugin {
         },
         () => {
           if (this.diagnostics.hasErrors) {
-            compilation.errors.push(new Error(this.diagnostics.formatDiagnostics('Localize translation errors')));
+            compilation.errors.push(
+              new Error(
+                this.diagnostics.formatDiagnostics('Localize translation errors')
+              )
+            );
           } else if (this.diagnostics.messages.length) {
-            compilation.warnings.push(new Error(this.diagnostics.formatDiagnostics('Localize translation messages')));
+            compilation.warnings.push(
+              new Error(
+                this.diagnostics.formatDiagnostics(
+                  'Localize translation messages'
+                )
+              )
+            );
           }
         }
       );
@@ -174,3 +215,5 @@ class AngularLocalizePlugin {
 }
 
 module.exports = AngularLocalizePlugin;
+module.exports.AngularLocalizePlugin = AngularLocalizePlugin;
+module.exports.makeICURuntimePlugin = makeICURuntimePlugin;

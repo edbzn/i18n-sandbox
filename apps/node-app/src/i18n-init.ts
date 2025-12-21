@@ -2,8 +2,7 @@
 // Compile-time: Simple translations replaced by Babel
 // Runtime: ICU expressions evaluated by $localize._icu()
 import '@angular/localize/init';
-import { loadTranslations } from '@angular/localize';
-import { parseICUMessage, renderICUMessage } from './utils/icu-utils';
+import { createI18nHelpers, parseICUMessage, renderICUMessage } from '@i18n-sandbox/i18n-webpack/runtime';
 
 import EN from './i18n/en.json';
 import FR from './i18n/fr.json';
@@ -13,10 +12,19 @@ const locales = {
   fr: FR,
 };
 
+// Create i18n helper utilities
+const i18n = createI18nHelpers(locales);
+
 // 🌐 i18n tip: Gets raw translation strings for ICU runtime evaluation
-export const getTranslations = (locale: string): Record<string, string> => {
-  const localeKey = locale as 'en' | 'fr';
-  return locales[localeKey]?.translations || locales.en.translations;
+export const getTranslations = i18n.getTranslations;
+
+export const initTranslations = () => {
+  // 🌐 i18n tip: Load translations for default locale
+  // Can be changed based on environment variable or runtime configuration
+  const locale = 'en'; // Change to 'fr' for French
+
+  console.log('Loading translations:', locale);
+  i18n.init(locale);
 };
 
 // 🌐 i18n tip: Custom ICU runtime function for plural/select expressions
@@ -45,12 +53,3 @@ if (typeof $localize !== 'undefined') {
     return renderICUMessage(icu, values, locale);
   };
 }
-
-export const initTranslations = () => {
-  // 🌐 i18n tip: Load translations for default locale
-  // Can be changed based on environment variable or runtime configuration
-  const currentLocale = EN; // Change to FR for French
-
-  console.log('Loading translations:', currentLocale.locale);
-  loadTranslations(currentLocale.translations);
-};

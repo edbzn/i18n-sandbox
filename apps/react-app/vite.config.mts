@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     build: {
-      //  i18n tip: Each locale builds to its own directory
+      // 🌐 i18n tip: Each locale builds to its own directory
       outDir: '../../dist/apps/react-app/' + locale,
     },
   };

@@ -1,6 +1,7 @@
 // 🌐 i18n tip: ICU message format - runtime parsing & evaluation for plurals/selects
 // Why runtime? Variable values only known at runtime, plural rules vary by locale (Arabic has 6 forms!)
 // Example: {count, plural, =0 {no items} =1 {one item} other {# items}}
+// Babel transforms $localize templates to $localize._icu() calls, this module evaluates them
 
 export interface ICUMessage {
   type: 'plural' | 'select' | 'selectordinal';
@@ -13,7 +14,8 @@ export interface ICUMessage {
 // Input: "{count, plural, =0 {no items} other {# items}}"
 // Output: {type: 'plural', variable: 'count', cases: {'=0': 'no items', 'other': '# items'}}
 export function parseICUMessage(message: string): ICUMessage | null {
-  const icuPattern = /\{([^,}]+),\s*(plural|select|selectordinal)\s*,\s*(?:offset:\s*(\d+)\s*)?((?:[^{}]|\{[^{}]*\})*)\}/;
+  const icuPattern =
+    /\{([^,}]+),\s*(plural|select|selectordinal)\s*,\s*(?:offset:\s*(\d+)\s*)?((?:[^{}]|\{[^{}]*\})*)\}/;
   const match = message.match(icuPattern);
 
   if (!match) {
@@ -96,14 +98,31 @@ export function renderICUMessage(
 
 /**
  * Get plural category for a number in a specific locale
+ * This is a simplified version - for full support use Intl.PluralRules
  */
-function getPluralCategory(
-  value: number,
+export function getPluralCategory(
+  n: number,
   locale: string,
-  ordinal: boolean
+  ordinal: boolean = false
 ): string {
-  const rules = new Intl.PluralRules(locale, {
-    type: ordinal ? 'ordinal' : 'cardinal',
-  });
-  return rules.select(value);
+  // Use native Intl.PluralRules if available
+  if (typeof Intl !== 'undefined' && Intl.PluralRules) {
+    const pr = new Intl.PluralRules(locale, {
+      type: ordinal ? 'ordinal' : 'cardinal',
+    });
+    return pr.select(n);
+  }
+
+  // Fallback for English
+  if (ordinal) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'one';
+    if (mod10 === 2 && mod100 !== 12) return 'two';
+    if (mod10 === 3 && mod100 !== 13) return 'few';
+    return 'other';
+  } else {
+    if (n === 1) return 'one';
+    return 'other';
+  }
 }

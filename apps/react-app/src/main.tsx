@@ -17,34 +17,6 @@ import {
 } from '@i18n-sandbox/i18n-vite/runtime';
 import App from './app/app';
 
-// 🌐 i18n tip: Custom ICU runtime function, called by Babel-transformed code
-// Transforms: $localize`:@@id:{count, plural, ...}` -> $localize._icu('id', template, locale, values)
-if (typeof $localize !== 'undefined') {
-  ($localize as any)._icu = function (
-    messageId: string, // Translation key
-    message: string, // ICU template string
-    locale: string, // Current locale (en/fr)
-    values: Record<string, any>, // Runtime values
-  ): string {
-    // 🌐 i18n tip: Get translated template for current locale
-    const translations = getTranslations(locale);
-    let messageToUse = message;
-
-    if (translations && messageId && translations[messageId]) {
-      messageToUse = translations[messageId];
-    }
-
-    // 🌐 i18n tip: Parse ICU syntax and evaluate with runtime values
-    const icu = parseICUMessage(messageToUse);
-    if (!icu) {
-      return messageToUse;
-    }
-
-    const result = renderICUMessage(icu, values, locale);
-    return result;
-  };
-}
-
 // 🌐 i18n tip: Initialize translations on app startup based on URL path
 const locale = getCurrentLocale();
 initTranslations(locale);
