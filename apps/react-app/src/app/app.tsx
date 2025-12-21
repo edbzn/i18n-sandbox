@@ -1,19 +1,29 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentLocale = location.pathname.startsWith('/fr') ? 'fr' : 'en';
   const [itemCount, setItemCount] = useState(0);
   const [minutes, setMinutes] = useState(0);
+
+  // Check if we're in production
+  const isProduction = import.meta.env.PROD && import.meta.env.BASE_URL !== '/';
 
   // Evaluate ICU expressions on each render to pick up new translations
   const itemsCountMessage = $localize`:@@itemsCount:{${itemCount}:VAR_PLURAL:, plural, =0 {No items} =1 {One item} other {${itemCount}:INTERPOLATION: items}}`;
   const minutesAgoMessage = $localize`:@@minutesAgo:{${minutes}:VAR_PLURAL:, plural, =0 {just now} =1 {one minute ago} other {${minutes}:INTERPOLATION: minutes ago}}`;
 
   const switchLocale = (locale: string) => {
-    // Navigate to the root of the other locale's build
-    window.location.href = `/${locale}/`;
+    if (isProduction) {
+      // Production: Navigate to the root of the other locale's build
+      window.location.href = `/${locale}/`;
+    } else {
+      // Development: Use React Router and reload to pick up new translations
+      navigate(`/${locale}`);
+      window.location.reload();
+    }
   };
 
   return (
