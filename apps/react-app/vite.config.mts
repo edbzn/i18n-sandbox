@@ -9,6 +9,8 @@ const locale = process.env.LOCALE || 'en';
 
 export default defineConfig(({ mode }) => {
   const isDevMode = mode === 'development';
+  // In dev mode, get locale from URL at runtime, so use 'en' as default for transform
+  const transformLocale = isDevMode ? 'en' : locale;
 
   return {
     root: import.meta.dirname,
@@ -27,14 +29,14 @@ export default defineConfig(({ mode }) => {
       react(),
       nxViteTsPaths(),
       nxCopyAssetsPlugin(['*.md']),
-      // Only use compile-time translations in production
-      ...(isDevMode ? [] : [
-        angularLocalizePlugin({
-          translations: `./src/i18n/${locale}.json`,
-          locale,
-          missingTranslation: 'warning',
-        }),
-      ]),
+      // Always use the plugin to transform $localize calls
+      // Always enable runtime ICU support for proper plural/select handling
+      angularLocalizePlugin({
+        translations: `./src/i18n/${transformLocale}.json`,
+        locale: transformLocale,
+        missingTranslation: 'warning',
+        enableRuntimeICU: true,
+      }),
     ],
     // Uncomment this if you are using workers.
     // worker: {

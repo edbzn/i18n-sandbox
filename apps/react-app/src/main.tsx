@@ -1,8 +1,36 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { getCurrentLocale, initTranslations } from './i18n-init';
+
+import { getCurrentLocale, initTranslations, getTranslations } from './i18n-init';
+import { parseICUMessage, renderICUMessage } from './icu-utils';
 import App from './app/app';
+
+
+// Extend $localize with ICU support
+if (typeof $localize !== 'undefined') {
+  ($localize as any)._icu = function(
+    messageId: string,
+    message: string,
+    locale: string,
+    values: Record<string, any>
+  ): string {
+    // Get translations for the current locale
+    const translations = getTranslations(locale);
+    let messageToUse = message;
+
+    if (translations && messageId && translations[messageId]) {
+      messageToUse = translations[messageId];
+    }
+
+    const icu = parseICUMessage(messageToUse);
+    if (!icu) {
+      return messageToUse;
+    }
+    const result = renderICUMessage(icu, values, locale);
+    return result;
+  };
+}
 
 // Initialize translations based on current URL
 const locale = getCurrentLocale();
