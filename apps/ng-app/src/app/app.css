@@ -59,3 +59,24 @@
 .app-container button:hover {
   background-color: #1565c0;
 }
+
+.icu-example {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.icu-example h3 {
+  margin-top: 0;
+  color: #1976d2;
+}
+
+.icu-example button {
+  background-color: #4caf50;
+  margin-top: 0.5rem;
+}
+
+.icu-example button:hover {
+  background-color: #45a049;
+}

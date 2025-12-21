@@ -10,6 +10,8 @@ import { RouterModule } from '@angular/router';
 export class App {
   protected title = 'ng-app';
   protected currentLocale: string;
+  protected itemCount = 0;
+  protected minutes = 0;
 
   constructor() {
     // Detect current locale from URL
@@ -18,5 +20,13 @@ export class App {
 
     // Example of using $localize in code
     console.log('Localized message:', $localize`:@@welcomeTitle:Welcome to Angular`);
+  }
+
+  incrementItems() {
+    this.itemCount++;
+  }
+
+  incrementMinutes() {
+    this.minutes++;
   }
 }

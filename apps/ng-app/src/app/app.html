@@ -9,6 +9,24 @@
   <p i18n="@@welcomeDescription">This is an example of internationalization using @angular/localize</p>
   <button i18n="@@getStartedButton">Get Started</button>
   <p i18n="@@currentLanguage">Current Language: English</p>
+
+  <hr>
+
+  <h2>ICU Expression Examples</h2>
+
+  <div class="icu-example">
+    <h3>Pluralization</h3>
+    <p>Item count: {{ itemCount }}</p>
+    <p i18n="@@itemsCount">{itemCount, plural, =0 {No items} =1 {One item} other {{{ itemCount }} items}}</p>
+    <button (click)="incrementItems()">Add Item</button>
+  </div>
+
+  <div class="icu-example">
+    <h3>Select</h3>
+    <p>Minutes: {{ minutes }}</p>
+    <p i18n="@@minutesAgo">{minutes, plural, =0 {just now} =1 {one minute ago} other {{{ minutes }} minutes ago}}</p>
+    <button (click)="incrementMinutes()">Add Minute</button>
+  </div>
 </div>
 
 <router-outlet></router-outlet>

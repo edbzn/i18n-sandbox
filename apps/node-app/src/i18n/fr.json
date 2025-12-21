@@ -3,6 +3,8 @@
   "translations": {
     "api.currentLanguage": "Langue actuelle : Français",
     "api.description": "Ceci est une API Node.js avec internationalisation",
-    "api.welcome": "Bonjour API"
+    "api.welcome": "Bonjour API",
+    "api.items.count": "{VAR_PLURAL, plural, =0 {Aucun élément} =1 {Un élément} other {INTERPOLATION éléments}}",
+    "api.minutes.ago": "{VAR_PLURAL, plural, =0 {à l'instant} =1 {il y a une minute} other {il y a INTERPOLATION minutes}}"
   }
 }

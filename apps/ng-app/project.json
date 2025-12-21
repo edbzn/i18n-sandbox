@@ -9,7 +9,7 @@
     "sourceLocale": "en",
     "locales": {
       "fr": {
-        "translation": "apps/ng-app/src/i18n/messages.fr.xlf"
+        "translation": "apps/ng-app/src/i18n/fr.json"
       }
     }
   },
@@ -84,8 +84,11 @@
     "extract-i18n": {
       "executor": "@angular/build:extract-i18n",
       "options": {
+        "format": "json",
+        "progress": true,
         "buildTarget": "ng-app:build",
-        "outputPath": "apps/ng-app/src/i18n"
+        "outputPath": "apps/ng-app/src/i18n",
+        "outFile": "en.json"
       }
     },
     "serve-static": {

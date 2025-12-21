@@ -4,6 +4,11 @@
       "implementation": "./src/executors/extract-translations/executor",
       "schema": "./src/executors/extract-translations/schema.json",
       "description": "extract-translations executor"
+    },
+    "localize-compile": {
+      "implementation": "./src/executors/localize-compile/executor",
+      "schema": "./src/executors/localize-compile/schema.json",
+      "description": "Compile $localize calls with ICU expressions using @angular/localize tools"
     }
   }
 }

@@ -37,7 +37,8 @@ const runExecutor: PromiseExecutor<ExtractTranslationsExecutorSchema> = async (
 
       // Updated pattern to capture both ID and default text
       // Pattern: $localize`:@@id:default text`
-      const localizePattern = /\$localize`:@@([^:]+):([^`]*)`/g;
+      // Use dotall (s) flag to match across newlines
+      const localizePattern = /\$localize`:@@([^:]+):([^`]*)`/gs;
       let match;
 
       while ((match = localizePattern.exec(content)) !== null) {

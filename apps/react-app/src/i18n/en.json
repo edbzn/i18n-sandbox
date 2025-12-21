@@ -3,6 +3,8 @@
   "translations": {
     "actions.getStarted": "Get Started",
     "currentLanguage": "Current Language: English",
+    "itemsCount": "{VAR_PLURAL, plural, =0 {No items} =1 {One item} other {INTERPOLATION items}}",
+    "minutesAgo": "{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {INTERPOLATION minutes ago}}",
     "welcome.description": "This is an example of internationalization using @angular/localize in React",
     "welcome.title": "Welcome to React"
   }

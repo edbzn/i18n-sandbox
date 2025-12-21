@@ -1,13 +1,19 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export function App() {
-  const navigate = useNavigate();
   const location = useLocation();
   const currentLocale = location.pathname.startsWith('/fr') ? 'fr' : 'en';
+  const [itemCount, setItemCount] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+
+  // Evaluate ICU expressions on each render to pick up new translations
+  const itemsCountMessage = $localize`:@@itemsCount:{${itemCount}:VAR_PLURAL:, plural, =0 {No items} =1 {One item} other {${itemCount}:INTERPOLATION: items}}`;
+  const minutesAgoMessage = $localize`:@@minutesAgo:{${minutes}:VAR_PLURAL:, plural, =0 {just now} =1 {one minute ago} other {${minutes}:INTERPOLATION: minutes ago}}`;
 
   const switchLocale = (locale: string) => {
-    navigate(`/${locale}`);
-    window.location.reload(); // Reload to reinitialize translations
+    // Navigate to the root of the other locale's build
+    window.location.href = `/${locale}/`;
   };
 
   return (
@@ -62,6 +68,49 @@ export function App() {
         {$localize`:@@actions.getStarted:Get Started`}
       </button>
       <p>{$localize`:@@currentLanguage:Current Language: English`}</p>
+
+      <hr style={{ margin: '2rem 0' }} />
+
+      <h2>ICU Expression Examples</h2>
+
+      <div style={{ margin: '1.5rem 0', padding: '1rem', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+        <h3 style={{ marginTop: 0, color: '#1976d2' }}>Pluralization</h3>
+        <p>Item count: {itemCount}</p>
+        <p>{itemsCountMessage}</p>
+        <button
+          onClick={() => setItemCount(itemCount + 1)}
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          Add Item
+        </button>
+      </div>
+
+      <div style={{ margin: '1.5rem 0', padding: '1rem', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+        <h3 style={{ marginTop: 0, color: '#1976d2' }}>Time Ago</h3>
+        <p>Minutes: {minutes}</p>
+        <p>{minutesAgoMessage}</p>
+        <button
+          onClick={() => setMinutes(minutes + 1)}
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          Add Minute
+        </button>
+      </div>
+
       <hr style={{ margin: '2rem 0' }} />
     </div>
   );

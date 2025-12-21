@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { loadTranslations } from '@angular/localize';
+
 import EN from '../i18n/en.json';
 import FR from '../i18n/fr.json';
 
@@ -10,7 +11,14 @@ const locales = {
 
 @Injectable()
 export class AppService {
-  getData(locale: 'en' | 'fr' = 'en'): { message: string; description: string; language: string; locale: string } {
+  getData(locale: 'en' | 'fr' = 'en', itemCount = 3, minutes = 5): {
+    message: string;
+    description: string;
+    language: string;
+    locale: string;
+    itemsExample: string;
+    timeExample: string;
+  } {
     // Load the requested locale
     const localeData = locales[locale] || locales.en;
     loadTranslations(localeData.translations);
@@ -20,6 +28,8 @@ export class AppService {
       description: $localize`:@@api.description:This is a Node.js API with internationalization`,
       language: $localize`:@@api.currentLanguage:Current Language: English`,
       locale: locale,
+      itemsExample: $localize`:@@api.items.count:{${itemCount}:VAR_PLURAL:, plural, =0 {No items} =1 {One item} other {${itemCount}:INTERPOLATION: items}}`,
+      timeExample: $localize`:@@api.minutes.ago:{${minutes}:VAR_PLURAL:, plural, =0 {just now} =1 {one minute ago} other {${minutes}:INTERPOLATION: minutes ago}}`,
     };
   }
 }

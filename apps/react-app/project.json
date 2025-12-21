@@ -12,6 +12,14 @@
         "outputPath": "apps/react-app/src/i18n",
         "pattern": "\\$localize`:@@([^:]+):[^`]*`"
       }
+    },
+    "localize-compile": {
+      "executor": "@i18n-sandbox/i18n-tools:localize-compile",
+      "options": {
+        "outputPath": "dist/apps/react-app",
+        "browserTarget": "react-app:build",
+        "locales": ["en", "fr"]
+      }
     }
   }
 }

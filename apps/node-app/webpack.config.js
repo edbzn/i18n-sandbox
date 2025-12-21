@@ -1,5 +1,9 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
+const AngularLocalizePlugin = require('./webpack.localize');
+
+// Determine the locale from environment variable or default to 'en'
+const locale = process.env.LOCALE || 'en';
 
 module.exports = {
   output: {
@@ -20,6 +24,10 @@ module.exports = {
       outputHashing: 'none',
       generatePackageJson: true,
       sourceMap: true,
-    })
+    }),
+    new AngularLocalizePlugin({
+      translationFile: join(__dirname, `src/i18n/${locale}.json`),
+      missingTranslation: 'error',
+    }),
   ],
 };
