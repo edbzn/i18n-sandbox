@@ -5,18 +5,23 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import angularLocalizePlugin from './vite.localize';
 
+// 🌐 i18n tip: Set locale via LOCALE env var for production builds
+// Dev: nx serve (single build, all locales via routing)
+// Prod: LOCALE=en nx build (separate build per locale in dist/apps/react-app/{locale}/)
 const locale = process.env.LOCALE || 'en';
 
 export default defineConfig(({ mode }) => {
   const isDevMode = mode === 'development';
-  // In dev mode, get locale from URL at runtime, so use 'en' as default for transform
+  // 🌐 i18n tip: Dev mode uses 'en' as default, prod uses LOCALE env var
   const transformLocale = isDevMode ? 'en' : locale;
 
   return {
     root: import.meta.dirname,
     cacheDir: '../../node_modules/.vite/react-app',
-    // Only use locale-specific base in production builds
+
+    // 🌐 i18n tip: Dev uses '/' (routing handles locales), prod uses '/{locale}/' (separate builds)
     base: isDevMode ? '/' : `/${locale}/`,
+
     server: {
       port: 4200,
       host: 'localhost',
@@ -29,20 +34,18 @@ export default defineConfig(({ mode }) => {
       react(),
       nxViteTsPaths(),
       nxCopyAssetsPlugin(['*.md']),
-      // Always use the plugin to transform $localize calls
-      // Always enable runtime ICU support for proper plural/select handling
+
+      // 🌐 i18n tip: enableRuntimeICU=true evaluates ICU plurals/selects at runtime
+      // Simple translations are compile-time replaced, ICU expressions use $localize._icu()
       angularLocalizePlugin({
-        translations: `./src/i18n/${transformLocale}.json`,
-        locale: transformLocale,
+        translations: `./src/i18n/en.json`,
+        locale: 'en',
         missingTranslation: 'warning',
         enableRuntimeICU: true,
       }),
     ],
-    // Uncomment this if you are using workers.
-    // worker: {
-    //   plugins: () => [ nxViteTsPaths() ],
-    // },
     build: {
+      // 🌐 i18n tip: Each locale builds to its own directory
       outDir: '../../dist/apps/react-app/' + locale,
     },
   };

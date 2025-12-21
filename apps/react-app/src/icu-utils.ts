@@ -1,19 +1,18 @@
-/**
- * ICU message format utilities
- * Handles plural, select, and selectordinal ICU expressions
- */
+// 🌐 i18n tip: ICU message format - runtime parsing & evaluation for plurals/selects
+// Why runtime? Variable values only known at runtime, plural rules vary by locale (Arabic has 6 forms!)
+// Example: {count, plural, =0 {no items} =1 {one item} other {# items}}
+// Babel transforms $localize templates to $localize._icu() calls, this module evaluates them
 
 export interface ICUMessage {
-  type:  'plural' | 'select' | 'selectordinal';
+  type: 'plural' | 'select' | 'selectordinal';
   variable: string;
   cases: Record<string, string>;
-  offset?:  number;
+  offset?: number;
 }
 
-/**
- * Parse ICU message syntax
- * Example: "{count, plural, =0 {no items} =1 {one item} other {# items}}"
- */
+// 🌐 i18n tip: Parses ICU syntax into structured format for evaluation
+// Input: "{count, plural, =0 {no items} other {# items}}"
+// Output: {type: 'plural', variable: 'count', cases: {'=0': 'no items', 'other': '# items'}}
 export function parseICUMessage(message: string): ICUMessage | null {
   const icuPattern = /\{([^,}]+),\s*(plural|select|selectordinal)\s*,\s*(?:offset:\s*(\d+)\s*)?((?:[^{}]|\{[^{}]*\})*)\}/;
   const match = message.match(icuPattern);
@@ -42,9 +41,9 @@ export function parseICUMessage(message: string): ICUMessage | null {
   };
 }
 
-/**
- * Render ICU message for a specific locale with given values
- */
+// 🌐 i18n tip: Evaluates ICU message with runtime values and locale-specific plural rules
+// Uses Intl.PluralRules to select correct plural form (zero/one/two/few/many/other)
+// Replaces # with numbers, and interpolates all placeholder values
 export function renderICUMessage(
   icu: ICUMessage,
   values: Record<string, any>,
