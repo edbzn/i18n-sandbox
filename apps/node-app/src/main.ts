@@ -3,10 +3,14 @@
  * This is only a minimal backend to get started.
  */
 
-import '@angular/localize/init';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
+// 🌐 i18n tip: Import i18n-init to set up $localize._icu runtime function
+import { initTranslations } from './i18n-init';
+
+// 🌐 i18n tip: Initialize translations and ICU runtime support
+initTranslations();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

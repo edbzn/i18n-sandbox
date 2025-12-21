@@ -7,6 +7,87 @@ const {
   makeLocalePlugin,
 } = require('@angular/localize/tools');
 
+// 🌐 i18n tip: Custom Babel plugin for runtime ICU evaluation
+// Transforms $localize ICU templates to $localize._icu() calls
+function makeICURuntimePlugin(locale, localizeName = '$localize') {
+  return {
+    visitor: {
+      TaggedTemplateExpression(path) {
+        const t = require('@babel/types');
+        const tag = path.get('tag');
+        if (tag.isIdentifier({name: localizeName})) {
+          const quasi = path.node.quasi;
+
+          // 🌐 i18n tip: Check if template contains ICU syntax (plural/select/selectordinal)
+          const hasICU = quasi.quasis.some((q) =>
+            /[:,]\s*(plural|select|selectordinal)/i.test(q.value.raw)
+          );
+
+          if (hasICU) {
+            // Extract message ID
+            const firstPart = quasi.quasis[0].value.raw;
+            const idMatch = firstPart.match(/:@@([^:]+):/);
+            const messageId = idMatch ? idMatch[1] : '';
+
+            // Build ICU message string and expression map
+            let messageStr = '';
+            const expressionMap = [];
+
+            quasi.quasis.forEach((element, i) => {
+              let raw = element.value.raw;
+              // Remove metadata from first part
+              if (i === 0) {
+                raw = raw.replace(/^:@@[^:]+:/, '');
+              } else if (i > 0) {
+                // Remove :PLACEHOLDER_NAME: prefix from subsequent parts
+                raw = raw.replace(/^:([^:,}]+):/, '');
+              }
+
+              if (i < quasi.expressions.length) {
+                const expr = quasi.expressions[i];
+                // Extract placeholder name from next quasi
+                const nextQuasi = quasi.quasis[i + 1];
+                const nextRaw = nextQuasi ? nextQuasi.value.raw : '';
+                const placeholderMatch = nextRaw.match(/^:([^:,}]+):/);
+                const placeholderName = placeholderMatch
+                  ? placeholderMatch[1].trim()
+                  : `expr_${i}`;
+                expressionMap.push({name: placeholderName, expr});
+
+                messageStr += raw + placeholderName;
+              } else {
+                messageStr += raw;
+              }
+            });
+
+            // Create runtime ICU call
+            const valuesObj = t.objectExpression(
+              expressionMap.map((item) =>
+                t.objectProperty(t.stringLiteral(item.name), item.expr)
+              )
+            );
+
+            const runtimeCall = t.callExpression(
+              t.memberExpression(
+                t.identifier(localizeName),
+                t.identifier('_icu')
+              ),
+              [
+                t.stringLiteral(messageId),
+                t.stringLiteral(messageStr),
+                t.stringLiteral(locale),
+                valuesObj,
+              ]
+            );
+
+            path.replaceWith(runtimeCall);
+          }
+        }
+      },
+    },
+  };
+}
+
 class AngularLocalizePlugin {
   constructor(options) {
     this.options = {
@@ -33,13 +114,16 @@ class AngularLocalizePlugin {
     this.locale = locale;
     this.translations = translations;
 
-    // Prepare Babel plugins
+    // 🌐 i18n tip: Prepare Babel plugins for transformation
     this.diagnostics = new Diagnostics();
     this.translatePlugin = makeEs2015TranslatePlugin(this.diagnostics, this.translations, {
       missingTranslation: this.options.missingTranslation,
       localizeName: this.options.localizeName,
     });
     this.localePlugin = makeLocalePlugin(this.locale, {localizeName: this.options.localizeName});
+
+    // 🌐 i18n tip: Add runtime ICU plugin for plural/select expressions
+    this.icuRuntimePlugin = makeICURuntimePlugin(this.locale, this.options.localizeName);
   }
 
   apply(compiler) {
@@ -65,6 +149,7 @@ class AngularLocalizePlugin {
           options: {
             translatePlugin: this.translatePlugin,
             localePlugin: this.localePlugin,
+            icuRuntimePlugin: this.icuRuntimePlugin,
             diagnostics: this.diagnostics,
           },
         });

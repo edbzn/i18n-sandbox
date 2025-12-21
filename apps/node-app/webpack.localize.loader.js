@@ -3,7 +3,7 @@ const {transformAsync} = require('@babel/core');
 module.exports = async function localizeLoader(source) {
   const callback = this.async();
   const options = this.getOptions();
-  const {translatePlugin, localePlugin, diagnostics} = options;
+  const {translatePlugin, localePlugin, icuRuntimePlugin, diagnostics} = options;
 
   // Skip files that don't contain $localize
   if (!source.includes('$localize')) {
@@ -16,6 +16,8 @@ module.exports = async function localizeLoader(source) {
       sourceMaps: true,
       plugins: [
         ['@babel/plugin-proposal-decorators', {legacy: true}],
+        // 🌐 i18n tip: Apply ICU runtime plugin first, then translate, then locale
+        icuRuntimePlugin,
         translatePlugin,
         localePlugin
       ],

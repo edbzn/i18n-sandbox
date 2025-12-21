@@ -12,8 +12,6 @@ const locale = process.env.LOCALE || 'en';
 
 export default defineConfig(({ mode }) => {
   const isDevMode = mode === 'development';
-  // 🌐 i18n tip: Dev mode uses 'en' as default, prod uses LOCALE env var
-  const transformLocale = isDevMode ? 'en' : locale;
 
   return {
     root: import.meta.dirname,
@@ -38,8 +36,8 @@ export default defineConfig(({ mode }) => {
       // 🌐 i18n tip: enableRuntimeICU=true evaluates ICU plurals/selects at runtime
       // Simple translations are compile-time replaced, ICU expressions use $localize._icu()
       angularLocalizePlugin({
-        translations: `./src/i18n/en.json`,
-        locale: 'en',
+        translations: `./src/i18n/${locale}.json`,
+        locale: locale,
         missingTranslation: 'warning',
         enableRuntimeICU: true,
       }),
