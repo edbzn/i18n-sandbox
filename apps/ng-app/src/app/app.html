@@ -1,8 +1,8 @@
 <div class="app-container">
   <div class="language-switcher">
-    <a [href]="'/en'" [class.active]="currentLocale === 'en'">English</a>
+    <a [href]="'/en'" [class.active]="currentLocale === 'en'" i18n="@@languageEnglish">English</a>
     <span> | </span>
-    <a [href]="'/fr'" [class.active]="currentLocale === 'fr'">Français</a>
+    <a [href]="'/fr'" [class.active]="currentLocale === 'fr'" i18n="@@languageFrench">Français</a>
   </div>
 
   <h1 i18n="@@welcomeTitle">Welcome to Angular</h1>
@@ -12,20 +12,20 @@
 
   <hr>
 
-  <h2>ICU Expression Examples</h2>
+  <h2 i18n="@@examplesTitle">ICU Expression Examples</h2>
 
   <div class="icu-example">
-    <h3>Pluralization</h3>
-    <p>Item count: {{ itemCount }}</p>
+    <h3 i18n="@@examplesPluralization">Pluralization</h3>
+    <p><span i18n="@@examplesItemCount">Item count</span>: {{ itemCount }}</p>
     <p i18n="@@itemsCount">{itemCount, plural, =0 {No items} =1 {One item} other {{{ itemCount }} items}}</p>
-    <button (click)="incrementItems()">Add Item</button>
+    <button (click)="incrementItems()" i18n="@@actionsAddItem">Add Item</button>
   </div>
 
   <div class="icu-example">
-    <h3>Select</h3>
-    <p>Minutes: {{ minutes }}</p>
+    <h3 i18n="@@examplesTimeAgo">Time Ago</h3>
+    <p><span i18n="@@examplesMinutes">Minutes</span>: {{ minutes }}</p>
     <p i18n="@@minutesAgo">{minutes, plural, =0 {just now} =1 {one minute ago} other {{{ minutes }} minutes ago}}</p>
-    <button (click)="incrementMinutes()">Add Minute</button>
+    <button (click)="incrementMinutes()" i18n="@@actionsAddMinute">Add Minute</button>
   </div>
 </div>
 

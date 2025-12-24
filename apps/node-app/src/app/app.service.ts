@@ -22,6 +22,9 @@ export class AppService {
     // Load the requested locale
     const localeData = locales[locale] || locales.en;
     loadTranslations(localeData.translations);
+    
+    // Set the dynamic locale for ICU runtime evaluation
+    ($localize as any)._locale = locale;
 
     return {
       message: $localize`:@@api.welcome:Hello API`,

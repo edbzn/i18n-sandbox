@@ -15,7 +15,7 @@ const {
  * Custom Babel plugin for runtime ICU evaluation
  * Transforms $localize ICU templates to $localize._icu() calls
  */
-function makeICURuntimePlugin(locale, localizeName = '$localize') {
+function makeICURuntimePlugin(locale, localizeName = '$localize', useDynamicLocale = false) {
   return {
     visitor: {
       TaggedTemplateExpression(path) {
@@ -73,6 +73,18 @@ function makeICURuntimePlugin(locale, localizeName = '$localize') {
               )
             );
 
+            // Use dynamic locale from $localize._locale or fallback to static locale
+            const localeArg = useDynamicLocale 
+              ? t.logicalExpression(
+                  '||',
+                  t.memberExpression(
+                    t.identifier(localizeName),
+                    t.identifier('_locale')
+                  ),
+                  t.stringLiteral(locale)
+                )
+              : t.stringLiteral(locale);
+
             const runtimeCall = t.callExpression(
               t.memberExpression(
                 t.identifier(localizeName),
@@ -81,7 +93,7 @@ function makeICURuntimePlugin(locale, localizeName = '$localize') {
               [
                 t.stringLiteral(messageId),
                 t.stringLiteral(messageStr),
-                t.stringLiteral(locale),
+                localeArg,
                 valuesObj,
               ]
             );
@@ -102,6 +114,7 @@ class AngularLocalizePlugin {
       localizeName: options.localizeName || '$localize',
       include: options.include,
       enableRuntimeICU: options.enableRuntimeICU || false,
+      useDynamicLocale: options.useDynamicLocale || false,
     };
 
     // Parse translations
@@ -149,7 +162,8 @@ class AngularLocalizePlugin {
     // Add runtime ICU plugin for plural/select expressions
     this.icuRuntimePlugin = makeICURuntimePlugin(
       this.locale,
-      this.options.localizeName
+      this.options.localizeName,
+      this.options.useDynamicLocale
     );
   }
 

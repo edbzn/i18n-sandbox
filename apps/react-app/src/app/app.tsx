@@ -41,7 +41,7 @@ export function App() {
             cursor: 'pointer',
           }}
         >
-          English
+          {$localize`:@@language.english:English`}
         </button>
         <button
           onClick={() => switchLocale('fr')}
@@ -54,7 +54,7 @@ export function App() {
             cursor: 'pointer',
           }}
         >
-          Français
+          {$localize`:@@language.french:Français`}
         </button>
       </div>
 
@@ -64,28 +64,15 @@ export function App() {
       <p>
         {$localize`:@@welcome.description:This is an example of internationalization using @angular/localize in React`}
       </p>
-      <button
-        style={{
-          backgroundColor: '#1976d2',
-          color: 'white',
-          border: 'none',
-          padding: '0.75rem 1.5rem',
-          fontSize: '1rem',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-      >
-        {$localize`:@@actions.getStarted:Get Started`}
-      </button>
       <p>{$localize`:@@currentLanguage:Current Language: English`}</p>
 
       <hr style={{ margin: '2rem 0' }} />
 
-      <h2>ICU Expression Examples</h2>
+      <h2>{$localize`:@@examples.title:ICU Expression Examples`}</h2>
 
       <div style={{ margin: '1.5rem 0', padding: '1rem', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-        <h3 style={{ marginTop: 0, color: '#1976d2' }}>Pluralization</h3>
-        <p>Item count: {itemCount}</p>
+        <h3 style={{ marginTop: 0, color: '#1976d2' }}>{$localize`:@@examples.pluralization:Pluralization`}</h3>
+        <p>{$localize`:@@examples.itemCount:Item count`}: {itemCount}</p>
         <p>{itemsCountMessage}</p>
         <button
           onClick={() => setItemCount(itemCount + 1)}
@@ -98,13 +85,13 @@ export function App() {
             cursor: 'pointer',
           }}
         >
-          Add Item
+          {$localize`:@@actions.addItem:Add Item`}
         </button>
       </div>
 
       <div style={{ margin: '1.5rem 0', padding: '1rem', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-        <h3 style={{ marginTop: 0, color: '#1976d2' }}>Time Ago</h3>
-        <p>Minutes: {minutes}</p>
+        <h3 style={{ marginTop: 0, color: '#1976d2' }}>{$localize`:@@examples.timeAgo:Time Ago`}</h3>
+        <p>{$localize`:@@examples.minutes:Minutes`}: {minutes}</p>
         <p>{minutesAgoMessage}</p>
         <button
           onClick={() => setMinutes(minutes + 1)}
@@ -117,7 +104,7 @@ export function App() {
             cursor: 'pointer',
           }}
         >
-          Add Minute
+          {$localize`:@@actions.addMinute:Add Minute`}
         </button>
       </div>
 

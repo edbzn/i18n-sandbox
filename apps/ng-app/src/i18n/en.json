@@ -1,11 +1,20 @@
 {
   "locale": "en",
   "translations": {
-    "welcomeTitle": "Welcome to Angular",
-    "welcomeDescription": "This is an example of internationalization using @angular/localize",
-    "getStartedButton": "Get Started",
+    "actionsAddItem": "Add Item",
+    "actionsAddMinute": "Add Minute",
     "currentLanguage": "Current Language: English",
+    "examplesItemCount": "Item count",
+    "examplesMinutes": "Minutes",
+    "examplesPluralization": "Pluralization",
+    "examplesTimeAgo": "Time Ago",
+    "examplesTitle": "ICU Expression Examples",
+    "getStartedButton": "Get Started",
     "itemsCount": "{VAR_PLURAL, plural, =0 {No items} =1 {One item} other {{INTERPOLATION} items}}",
-    "minutesAgo": "{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {{INTERPOLATION} minutes ago}}"
+    "languageEnglish": "English",
+    "languageFrench": "Français",
+    "minutesAgo": "{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {{INTERPOLATION} minutes ago}}",
+    "welcomeDescription": "This is an example of internationalization using @angular/localize",
+    "welcomeTitle": "Welcome to Angular"
   }
 }

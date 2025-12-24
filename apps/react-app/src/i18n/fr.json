@@ -1,9 +1,18 @@
 {
   "locale": "fr",
   "translations": {
+    "actions.addItem": "Ajouter un élément",
+    "actions.addMinute": "Ajouter une minute",
     "actions.getStarted": "Commencer",
     "currentLanguage": "Langue actuelle : Français",
+    "examples.itemCount": "Nombre d'éléments",
+    "examples.minutes": "Minutes",
+    "examples.pluralization": "Pluralisation",
+    "examples.timeAgo": "Il y a",
+    "examples.title": "Exemples d'expressions ICU",
     "itemsCount": "{VAR_PLURAL, plural, =0 {Aucun élément} =1 {Un élément} other {INTERPOLATION éléments}}",
+    "language.english": "Anglais",
+    "language.french": "Français",
     "minutesAgo": "{VAR_PLURAL, plural, =0 {à l'instant} =1 {il y a une minute} other {il y a INTERPOLATION minutes}}",
     "welcome.description": "Ceci est un exemple d'internationalisation utilisant @angular/localize dans React",
     "welcome.title": "Bienvenue sur React"

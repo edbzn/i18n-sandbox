@@ -2,7 +2,7 @@
 // Dev: Locale from URL (/en, /fr), page reload on switch
 // Prod: Separate builds per locale, navigate between folders
 import '@angular/localize/init';
-import { createI18nHelpers } from '@i18n-sandbox/i18n-vite/runtime';
+import { createI18nHelpers, parseICUMessage, renderICUMessage } from '@i18n-sandbox/i18n-vite/runtime';
 
 import EN from './i18n/en.json';
 import FR from './i18n/fr.json';

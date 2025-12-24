@@ -29,6 +29,7 @@ module.exports = {
       translationFile: join(__dirname, `src/i18n/${locale}.json`),
       missingTranslation: 'error',
       enableRuntimeICU: true,
+      useDynamicLocale: true,
     }),
   ],
 };
