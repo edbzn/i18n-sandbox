@@ -15,8 +15,8 @@ const locales = {
 // Create i18n helper utilities
 export const i18n = createI18nHelpers(locales);
 
-// 🌐 i18n tip: Loads translations into @angular/localize runtime
-// Called on app startup, makes translations available to $localize
+// // 🌐 i18n tip: Loads translations into @angular/localize runtime
+// // Called on app startup, makes translations available to $localize
 export const initTranslations = (locale: 'en' | 'fr' = 'en') => {
   i18n.init(locale);
 };

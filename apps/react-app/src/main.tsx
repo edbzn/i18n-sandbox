@@ -1,24 +1,21 @@
-// 🌐 i18n tip: ICU runtime support for plural/select expressions
-// Compile-time: Simple translations replaced by Babel ($localize`:@@key:text`)
-// Runtime: ICU expressions evaluated by $localize._icu() ({count, plural, ...})
-// Uses Intl.PluralRules for locale-specific plural forms (English: one/other, French: one/other, Arabic: 6 forms)
+// 🌐 i18n tip: Compile-time translation with Angular's localize Babel plugins
+// The Vite plugin transforms $localize calls at build time (both dev and prod)
+// Simple translations: $localize`:@@key:text` → 'translated text'
+// ICU expressions: Not yet supported at compile-time, need runtime evaluation
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+import App from './app/app';
 import {
   getCurrentLocale,
   initTranslations,
-  getTranslations,
 } from './i18n-init';
-import {
-  parseICUMessage,
-  renderICUMessage,
-} from '@i18n-sandbox/i18n-vite/runtime';
-import App from './app/app';
+
 
 // 🌐 i18n tip: Initialize translations on app startup based on URL path
 const locale = getCurrentLocale();
+
 initTranslations(locale);
 
 const root = ReactDOM.createRoot(
@@ -26,7 +23,7 @@ const root = ReactDOM.createRoot(
 );
 
 // 🌐 i18n tip: Check build mode for routing strategy
-const isProduction = import.meta.env.PROD && import.meta.env.BASE_URL !== '/';
+const isProduction = import.meta.env.PROD;
 
 root.render(
   <StrictMode>

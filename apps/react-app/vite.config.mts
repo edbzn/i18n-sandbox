@@ -33,12 +33,11 @@ export default defineConfig(({ mode }) => {
       nxViteTsPaths(),
       nxCopyAssetsPlugin(['*.md']),
 
-      // 🌐 i18n tip: enableRuntimeICU=true evaluates ICU plurals/selects at runtime
-      // Simple translations are compile-time replaced, ICU expressions use $localize._icu()
       angularLocalize({
         translations: `./src/i18n/${locale}.json`,
         locale: locale,
         missingTranslation: 'warning',
+        production: !isDevMode,
         enableRuntimeICU: true,
       }),
     ],

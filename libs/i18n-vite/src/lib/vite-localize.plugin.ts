@@ -53,10 +53,16 @@ export interface LocalizePluginOptions {
   include?: string[];
 
   /**
-   * Enable runtime ICU evaluation (for dev mode)
+   * Enable runtime ICU evaluation
    * @default false
    */
   enableRuntimeICU?: boolean;
+
+  /**
+   * Indicates if the build is for production
+   * @default false
+   */
+  production?: boolean;
 }
 
 interface TranslationFile {
@@ -225,6 +231,7 @@ export function angularLocalize(options: LocalizePluginOptions = {}): Plugin {
     sourceMaps = true,
     include = ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     enableRuntimeICU = false,
+    production = false,
   } = options;
 
   let translationsMap: Record<string, ɵParsedTranslation> = {};
@@ -273,8 +280,10 @@ export function angularLocalize(options: LocalizePluginOptions = {}): Plugin {
         if (enableRuntimeICU) {
           // In dev mode with runtime ICU: convert ICU expressions to runtime calls
           plugins.push(makeICURuntimePlugin(resolvedLocale, localizeName));
-        } else {
-          // In production: use compile-time translation
+        }
+
+        // In production: use compile-time translation
+        if (production) {
           plugins.push(
             // Inline the locale
             makeLocalePlugin(resolvedLocale, { localizeName }),
