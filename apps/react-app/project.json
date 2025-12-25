@@ -10,53 +10,30 @@
       "outputs": ["{workspaceRoot}/dist/apps/react-app"],
       "options": {
         "commands": [
-          "LOCALE=en nx build:en react-app",
-          "LOCALE=fr nx build:fr react-app"
-        ],
-        "parallel": false
+          "LOCALE=en nx build:locale react-app -c en",
+          "LOCALE=fr nx build:locale react-app -c fr"
+        ]
       }
     },
-    "build:en": {
+    "build:locale": {
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/react-app/en"
+        "outputPath": "dist/apps/react-app/{configuration}"
       },
       "configurations": {
+        "en": {
+          "outputPath": "dist/apps/react-app/en"
+        },
+        "fr": {
+          "outputPath": "dist/apps/react-app/fr"
+        },
         "development": {
           "mode": "development"
         },
         "production": {
           "mode": "production"
         }
-      }
-    },
-    "build:fr": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "dist/apps/react-app/fr"
-      },
-      "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
-        }
-      }
-    },
-    "build:all": {
-      "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/apps/react-app"],
-      "options": {
-        "commands": [
-          "LOCALE=en nx build:en react-app",
-          "LOCALE=fr nx build:fr react-app"
-        ],
-        "parallel": false
       }
     },
     "extract-i18n": {
@@ -65,14 +42,6 @@
         "sourceRoot": "apps/react-app/src",
         "outputPath": "apps/react-app/src/i18n",
         "pattern": "\\$localize`:@@([^:]+):[^`]*`"
-      }
-    },
-    "localize-compile": {
-      "executor": "@i18n-sandbox/i18n-tools:localize-compile",
-      "options": {
-        "outputPath": "dist/apps/react-app",
-        "browserTarget": "react-app:build",
-        "locales": ["en", "fr"]
       }
     }
   }
