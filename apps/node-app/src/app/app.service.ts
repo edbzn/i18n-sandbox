@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { loadTranslations } from '@angular/localize';
+import { setLocale, setTranslations } from '../i18n-init';
 
 import EN from '../i18n/en.json';
 import FR from '../i18n/fr.json';
@@ -21,10 +22,11 @@ export class AppService {
   } {
     // Load the requested locale
     const localeData = locales[locale] || locales.en;
+
+    // Update the module-scoped variables for ICU runtime evaluation
+    setLocale(locale);
+    setTranslations(localeData.translations);
     loadTranslations(localeData.translations);
-    
-    // Set the dynamic locale for ICU runtime evaluation
-    ($localize as any)._locale = locale;
 
     return {
       message: $localize`:@@api.welcome:Hello API`,

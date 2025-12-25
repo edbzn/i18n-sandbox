@@ -14,6 +14,16 @@ export const getTranslations = (): Record<string, string> => {
   return currentTranslations;
 };
 
+// 🌐 i18n tip: Set current locale for ICU runtime evaluation
+export const setLocale = (locale: string) => {
+  currentLocale = locale;
+};
+
+// 🌐 i18n tip: Set current translations
+export const setTranslations = (translations: Record<string, string>) => {
+  currentTranslations = translations;
+};
+
 export const initTranslations = () => {
   // 🌐 i18n tip: Load translations based on environment variable at runtime
   // Single build serves all locales - locale determined at startup
