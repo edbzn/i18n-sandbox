@@ -1,9 +1,5 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
-const AngularLocalizePlugin = require('../../libs/i18n-webpack/src/lib/webpack-localize.plugin');
-
-// Determine the locale from environment variable or default to 'en'
-const locale = process.env.LOCALE || 'en';
 
 module.exports = {
   output: {
@@ -19,17 +15,18 @@ module.exports = {
       compiler: 'tsc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
-      assets: ["./src/assets"],
+      assets: [
+        "./src/assets",
+        {
+          input: './src/i18n',
+          glob: '*.json',
+          output: 'assets/i18n',
+        }
+      ],
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
       sourceMap: true,
-    }),
-    new AngularLocalizePlugin({
-      translationFile: join(__dirname, `src/i18n/${locale}.json`),
-      missingTranslation: 'error',
-      enableRuntimeICU: true,
-      useDynamicLocale: true,
     }),
   ],
 };
